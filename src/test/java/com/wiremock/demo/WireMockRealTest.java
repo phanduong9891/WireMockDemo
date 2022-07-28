@@ -10,9 +10,7 @@ import com.github.tomakehurst.wiremock.common.Json;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,7 +23,7 @@ import java.util.List;
 import org.json.*;
 
 import static org.assertj.core.api.Assertions.*;
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WireMockRealTest {
 
     //use wiremock server, need to import
@@ -37,8 +35,8 @@ public class WireMockRealTest {
     }
 
 
-    @BeforeEach
-    void wireMockServerSetUp() {
+    @BeforeAll
+     void wireMockServerSetUp() {
         this.restTemplate = new RestTemplate();
         this.wireMockServer = new WireMockServer(options()
                 .dynamicPort());
@@ -65,16 +63,17 @@ public class WireMockRealTest {
                         .withBody(json)));
 
         String link = apiLink() + "/1";
-        HttpEntity<String> getContent = new HttpEntity<>(json);
+//        HttpEntity<String> getContent = new HttpEntity<>(json);
 
         //this is a request to the link
-        ResponseEntity<String> response1 = restTemplate.exchange(
-                link,
-                HttpMethod.GET,
-                getContent,
-                String.class
-        );
-     assertThat(response1.getBody()).isEqualTo(json);
+//        ResponseEntity<String> response1 = restTemplate.exchange(
+//                link,
+//                HttpMethod.GET,
+//                getContent,
+//                String.class
+//        );
+        ResponseEntity<String> response = restTemplate.getForEntity(link,String.class);
+     assertThat(response.getBody()).isEqualTo(json);
 
     }
 
@@ -158,7 +157,7 @@ public class WireMockRealTest {
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 
-    @AfterEach
+    @AfterAll
     void stopWireMockServer() {
         wireMockServer.stop();
     }
